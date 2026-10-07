@@ -2,19 +2,31 @@
 
 ERP for **Novafer Industries**, a (fictional) Tunisian manufacturer of metal and industrial parts. It covers the catalogue, clients, stock, the devis → facture → règlement chain, réclamations (client complaints) and an analytics dashboard. The interface is in French and follows Tunisian invoicing rules.
 
+> **Portfolio project, all rights reserved.** You're welcome to read the code and run it locally to evaluate my work. Using, copying, modifying or redistributing it, or the Novafer brand, requires my written permission. See [LICENSE](LICENSE).
+
+![Dashboard: revenue, receivables, invoiced vs collected, receivables aging, overdue invoices](docs/screenshots/dashboard.png)
+
+| Analytics | Printed invoice (A4) |
+|---|---|
+| ![Analytics: margin, DSO, top clients and products, quote funnel](docs/screenshots/analytics.png) | ![A4 invoice with VAT summary, FODEC, fiscal stamp and amount in words](docs/screenshots/invoice-print.png) |
+
+| Phone layout | Brand identity |
+|---|---|
+| ![Dashboard on a phone](docs/screenshots/mobile-dashboard.png) | ![Novafer logo variants](docs/screenshots/brand-logos.png) |
+
+*All companies, people and figures in the screenshots are demo data.*
+
 | Layer | Technology |
 |---|---|
 | Frontend | Angular 21 (standalone components, signals, zoneless), Chart.js, Lucide icons, Inter + Archivo |
 | Backend | Spring Boot 4.1 (Java 21), Spring Security with JWT, Spring Data JPA, Flyway |
 | Database | PostgreSQL 18 |
 
-> The brief asked for "AngularJS". AngularJS 1.x reached end of life in 2022, so the frontend uses modern Angular. It uses Angular 21 rather than 22 because Angular 22 needs Node 24.15+ and this machine has Node 24.13.
-
 ## Run it locally
 
 You need Docker, Java 21+, Maven and Node 20.19+ / 22.12+ / 24+.
 
-1. Start PostgreSQL (port **5434**, because 5432 and 5433 are already used on this machine):
+1. Start PostgreSQL on port **5434**, so it doesn't clash with a local PostgreSQL (change `POSTGRES_PORT` in `.env` if needed):
 
    ```bash
    docker compose up -d postgres
@@ -103,3 +115,7 @@ node brand/src/build-guidelines.mjs <dashboard.png> <facture.png>
 ```
 
 The name "Novafer" has not been checked for trademark availability.
+
+## Licence
+
+Copyright © 2026 Firas. All rights reserved. This is not open-source software: you may view the code and run it locally to evaluate it, and any other use needs written permission. Full terms in [LICENSE](LICENSE). Third-party libraries, fonts and icons keep their own licences.
