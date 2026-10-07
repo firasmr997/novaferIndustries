@@ -1,0 +1,11 @@
+# Store and check out text with LF so shell scripts (mvnw) and Dockerfiles work in Linux containers.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.jar binary

@@ -1,0 +1,153 @@
+<div class="page">
+  <a class="back-link" [routerLink]="backLink()"><app-icon name="arrow-left" [size]="15" /> {{ isQuote() ? 'Devis' : 'Factures' }}</a>
+  <header class="page-head">
+    <div>
+      <h1>{{ title() }}</h1>
+      <p class="lead">
+        @if (isQuote()) { Le numéro est attribué à la création. }
+        @else { La facture reste un brouillon modifiable ; son numéro légal est attribué à l'émission. }
+      </p>
+    </div>
+    <div class="actions">
+      <a class="btn" [routerLink]="backLink()">Annuler</a>
+      <button type="button" class="btn btn-primary" [disabled]="saving() || loading()" (click)="save()">
+        <app-icon name="check" /> {{ saving() ? 'Enregistrement…' : (isQuote() ? 'Enregistrer le devis' : 'Enregistrer le brouillon') }}
+      </button>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="alert error-banner" role="alert"><app-icon name="circle-alert" /> {{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="panel panel-body"><span class="skeleton"></span></div>
+  } @else {
+    <div class="editor">
+      <div class="editor-main">
+        <section class="panel full">
+          <div class="panel-head"><h2>Client et conditions</h2></div>
+          <div class="panel-body form-grid">
+            <div class="field span-6">
+              <label>Client</label>
+              <app-picker [search]="lookups.clients" [value]="clientPick()" (valueChange)="selectClient($any($event))"
+                          placeholder="Rechercher un client…" [invalid]="submitted() && !clientPick()" />
+              @if (vatExempt()) {
+                <span class="hint warn">Client en suspension de TVA et de FODEC : lignes à 0 %, sans FODEC.</span>
+              }
+            </div>
+            <div class="field span-3">
+              <label for="issue">{{ isQuote() ? 'Date du devis' : 'Date de facture' }}</label>
+              <input id="issue" class="input" type="date" [value]="issueDate()" (change)="setIssueDate($any($event.target).value)" />
+            </div>
+            <div class="field span-3">
+              <label for="end">{{ isQuote() ? 'Valable jusqu\'au' : 'Échéance' }}</label>
+              <input id="end" class="input" type="date" [value]="endDate()" (change)="setEndDate($any($event.target).value)" />
+            </div>
+            <div class="field span-12">
+              <label for="subject">Objet</label>
+              <input id="subject" class="input" maxlength="200" [value]="subject()" (input)="subject.set($any($event.target).value)"
+                     placeholder="Ex. Charpente hangar de stockage, lot 2" />
+            </div>
+          </div>
+        </section>
+
+        <section class="panel full">
+          <div class="panel-head">
+            <div>
+              <h2>Lignes</h2>
+              <p>Choisissez un produit du catalogue ou saisissez une ligne libre.</p>
+            </div>
+          </div>
+          <div class="lines">
+            <div class="line head" aria-hidden="true">
+              <span>Désignation</span><span class="right">Qté</span><span>Unité</span><span class="right">PU HT</span>
+              <span class="right">Rem. %</span><span>TVA</span><span class="right">Total HT</span><span></span>
+            </div>
+            @for (l of lines(); track l.key; let i = $index; let last = $last) {
+              <div class="line" role="group" [attr.aria-label]="'Ligne ' + (i + 1)">
+                <div class="desc">
+                  <app-picker [search]="lookups.products" [value]="l.product" [small]="true"
+                              (valueChange)="pickProduct(l.key, $any($event))" placeholder="Produit du catalogue…" />
+                  <input class="input input-sm" [class.invalid]="submitted() && !l.description.trim()" [value]="l.description"
+                         (input)="patch(l.key, { description: $any($event.target).value })" placeholder="Désignation"
+                         aria-label="Désignation" />
+                  @if (l.reference) { <span class="ref">Réf. {{ l.reference }}</span> }
+                </div>
+                <!-- Each cell carries a label that only shows in the stacked (narrow) layout. -->
+                <label class="cell c-qty"><span class="mlabel">Qté</span>
+                  <input class="input input-sm num" inputmode="decimal" [class.invalid]="submitted() && !(l.quantity > 0)"
+                         [value]="l.quantity" (input)="patch(l.key, { quantity: num($any($event.target).value) })" aria-label="Quantité" />
+                </label>
+                <label class="cell c-unit"><span class="mlabel">Unité</span>
+                  <select class="select input-sm" [value]="l.unit" (change)="patch(l.key, { unit: $any($event.target).value })" aria-label="Unité">
+                    @for (u of units; track u) { <option [value]="u" [selected]="u === l.unit">{{ u }}</option> }
+                    @if (!units.includes(l.unit)) { <option [value]="l.unit" selected>{{ l.unit }}</option> }
+                  </select>
+                </label>
+                <label class="cell c-price"><span class="mlabel">PU HT</span>
+                  <input class="input input-sm num" inputmode="decimal" [value]="l.unitPrice"
+                         (input)="patch(l.key, { unitPrice: num($any($event.target).value) })" aria-label="Prix unitaire HT" />
+                </label>
+                <label class="cell c-disc"><span class="mlabel">Remise %</span>
+                  <input class="input input-sm num" inputmode="decimal" [value]="l.discountPct"
+                         (input)="patch(l.key, { discountPct: num($any($event.target).value) })" aria-label="Remise en pourcentage" />
+                </label>
+                <label class="cell c-vat"><span class="mlabel">TVA</span>
+                  <select class="select input-sm" [disabled]="vatExempt()" (change)="patch(l.key, { vatRate: +$any($event.target).value })" aria-label="Taux de TVA">
+                    @for (r of vatRates; track r) { <option [value]="r" [selected]="r === (vatExempt() ? 0 : l.vatRate)">{{ r }} %</option> }
+                  </select>
+                </label>
+                <span class="total num"><span class="mlabel">Total HT</span>{{ lineHt(l) | money }}</span>
+                <div class="tools">
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon" [disabled]="i === 0" (click)="moveLine(l.key, -1)" aria-label="Monter la ligne">
+                    <app-icon name="chevron-up" [size]="14" />
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon" [disabled]="last" (click)="moveLine(l.key, 1)" aria-label="Descendre la ligne">
+                    <app-icon name="chevron-down" [size]="14" />
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon" (click)="removeLine(l.key)" aria-label="Supprimer la ligne">
+                    <app-icon name="trash" [size]="14" />
+                  </button>
+                </div>
+              </div>
+            }
+            <div class="add">
+              <button type="button" class="btn btn-sm" (click)="addLine()"><app-icon name="plus" [size]="14" /> Ajouter une ligne</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Notes</h2></div>
+          <div class="panel-body">
+            <textarea class="textarea" rows="3" maxlength="2000" [value]="notes()" (input)="notes.set($any($event.target).value)"
+                      placeholder="Conditions particulières, délai de fabrication, lieu de livraison…" aria-label="Notes"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <aside class="panel summary" aria-label="Récapitulatif">
+        <div class="panel-head"><h2>Récapitulatif</h2></div>
+        <dl class="sum">
+          <div><dt>Total brut HT</dt><dd class="num">{{ totals().gross | money }}</dd></div>
+          @if (totals().discount > 0) {
+            <div><dt>Remises</dt><dd class="num">− {{ totals().discount | money }}</dd></div>
+          }
+          <div class="strong"><dt>Total HT</dt><dd class="num">{{ totals().totalHt | money }}</dd></div>
+          @if (totals().fodec > 0) {
+            <div><dt>FODEC {{ settings()?.fodecRate }} %</dt><dd class="num">{{ totals().fodec | money }}</dd></div>
+          }
+          @for (v of totals().vat; track v.rate) {
+            <div><dt>TVA {{ v.rate }} % <span class="subtle">sur {{ v.base | money }}</span></dt><dd class="num">{{ v.amount | money }}</dd></div>
+          }
+          @if (!isQuote()) {
+            <div><dt>Timbre fiscal</dt><dd class="num">{{ totals().stamp | money }}</dd></div>
+          }
+          <div class="grand"><dt>Total TTC</dt><dd class="num">{{ totals().totalTtc | money }} <span class="currency">TND</span></dd></div>
+        </dl>
+        <p class="note">Calcul indicatif ; les montants définitifs sont recalculés par le serveur à l'enregistrement.</p>
+      </aside>
+    </div>
+  }
+</div>

@@ -1,0 +1,181 @@
+<div class="page">
+  <header class="page-head">
+    <div>
+      <h1>Analyses</h1>
+      <p class="lead">Ventes, marge, recouvrement et qualité sur la période choisie.</p>
+    </div>
+    <div class="actions">
+      <div class="segmented" role="group" aria-label="Période">
+        @for (p of periods; track p) {
+          <button type="button" [attr.aria-pressed]="months() === p" (click)="months.set(p)">{{ p }} mois</button>
+        }
+      </div>
+    </div>
+  </header>
+
+  @if (data.error()) {
+    <div class="alert" role="alert"><app-icon name="circle-alert" /> Les analyses n'ont pas pu être chargées.</div>
+  }
+
+  @let a = data.value();
+  @let t = a?.totals;
+
+  <section class="panel kpis" [class.loading]="data.isLoading()">
+    <div class="kpi">
+      <span class="label">Facturé HT</span>
+      <span class="value num">{{ t ? (t.invoiced | money: false) : '…' }}<small>TND</small></span>
+      <span class="sub"><span class="num">{{ t?.invoiceCount ?? '–' }}</span> factures · moy. <span class="num">{{ t ? (t.averageInvoice | money: false) : '–' }}</span></span>
+    </div>
+    <div class="kpi">
+      <span class="label">Marge brute</span>
+      <span class="value num">{{ t ? (t.margin | money: false) : '…' }}<small>TND</small></span>
+      <span class="sub">Taux <span class="num">{{ t?.marginRate | pct }}</span> du CA</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Encaissé TTC</span>
+      <span class="value num">{{ t ? (t.collected | money: false) : '…' }}<small>TND</small></span>
+      <span class="sub">Délai moyen <span class="num">{{ t?.averagePaymentDays ?? '–' }}</span> j</span>
+    </div>
+    <div class="kpi">
+      <span class="label">DSO</span>
+      <span class="value num">{{ t?.dso ?? '–' }}<small>jours</small></span>
+      <span class="sub">Encours rapporté au CA des 90 derniers jours</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Transformation</span>
+      <span class="value num">{{ a ? (a.quoteFunnel.conversionRate | pct) : '…' }}</span>
+      <span class="sub">Devis acceptés sur devis tranchés</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Réclamations</span>
+      <span class="value num">{{ t ? (t.complaintsPer100Invoices | qty) : '–' }}<small>/ 100 fact.</small></span>
+      <span class="sub">Non-qualité <span class="num">{{ t ? (t.nonQualityCost | money: false) : '–' }}</span> TND</span>
+    </div>
+  </section>
+
+  <section class="panel row">
+    <div class="panel-head flush">
+      <div>
+        <h2>Chiffre d'affaires, devis et marge</h2>
+        <p>Par mois, en TND HT</p>
+      </div>
+      <ul class="legend" aria-hidden="true">
+        <li><span class="sw" style="background:#2b4acb"></span> Facturé</li>
+        <li><span class="sw" style="background:#dce3fa"></span> Devis émis</li>
+        <li><span class="sw line" style="background:#e8833a"></span> Marge brute</li>
+      </ul>
+    </div>
+    <div class="chart-box">
+      @if (revenueChart(); as c) { <canvas [appChart]="c" role="img" aria-label="Chiffre d'affaires, devis et marge par mois"></canvas> }
+      @else { <span class="skeleton tall"></span> }
+    </div>
+  </section>
+
+  <div class="grid-2 row">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Meilleurs clients</h2><p>Part du chiffre d'affaires HT</p></div></div>
+      <div class="table-wrap">
+        <table class="table compact">
+          <thead><tr><th>Client</th><th class="right">CA HT</th><th class="share-col">Part</th><th class="right">Encours</th></tr></thead>
+          <tbody>
+            @for (c of a?.topClients ?? []; track c.id) {
+              <tr>
+                <td class="primary-cell"><a [routerLink]="['/clients', c.id]">{{ c.name }}</a><span class="secondary">{{ c.city }} · {{ c.invoices }} factures</span></td>
+                <td class="right num">{{ c.revenue | money: false }}</td>
+                <td class="share-col"><span class="share"><span class="bar" [style.width.%]="c.share * 2.5"></span><span class="num">{{ c.share | pct }}</span></span></td>
+                <td class="right num" [class.subtle]="!c.openBalance">{{ c.openBalance | money: false }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><h2>Meilleurs produits</h2><p>Quantités et marge sur la période</p></div></div>
+      <div class="table-wrap">
+        <table class="table compact">
+          <thead><tr><th>Produit</th><th class="right">Quantité</th><th class="right">CA HT</th><th class="right">Marge</th></tr></thead>
+          <tbody>
+            @for (p of a?.topProducts ?? []; track p.id) {
+              <tr>
+                <td class="primary-cell">{{ p.name }}<span class="secondary">{{ p.reference }}</span></td>
+                <td class="right num">{{ p.quantity | qty }} <span class="subtle">{{ p.unit }}</span></td>
+                <td class="right num">{{ p.revenue | money: false }}</td>
+                <td class="right num">{{ marginRate(p.revenue, p.margin) | pct }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid-3 row">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Ventes par famille</h2><p>CA HT par catégorie</p></div></div>
+      <ul class="bars">
+        @for (c of a?.revenueByCategory ?? []; track c.name) {
+          <li>
+            <div class="bar-label"><span>{{ c.name }}</span><span class="num">{{ c.share | pct }}</span></div>
+            <div class="track"><span [style.width.%]="(c.revenue / maxCategory()) * 100"></span></div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Entonnoir des devis</h2>
+          @if (a) { <p><span class="num">{{ a.quoteFunnel.wonAmount | money: false }}</span> TND gagnés sur <span class="num">{{ a.quoteFunnel.quotedAmount | money: false }}</span></p> }
+        </div>
+      </div>
+      <ul class="bars funnel">
+        @for (s of funnel(); track s.label) {
+          <li>
+            <div class="bar-label"><span>{{ s.label }}</span><span class="num">{{ s.value }}</span></div>
+            <div class="track"><span [style.width.%]="s.pct"></span></div>
+          </li>
+        }
+        @if (a) {
+          <li class="foot"><span>Refusés <strong class="num">{{ a.quoteFunnel.refused }}</strong></span><span>Expirés <strong class="num">{{ a.quoteFunnel.expired }}</strong></span></li>
+        }
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><h2>Modes de règlement</h2><p>Encaissements de la période</p></div></div>
+      <ul class="bars">
+        @for (m of a?.paymentMethods ?? []; track m.method) {
+          <li>
+            <div class="bar-label"><span>{{ m.method | label: methodLabels }}</span><span class="num">{{ m.amount | money: false }}</span></div>
+            <div class="track teal"><span [style.width.%]="(m.amount / maxMethod()) * 100"></span></div>
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+
+  <section class="panel row quality">
+    <div class="panel-head"><div><h2>Qualité</h2><p>Réclamations ouvertes par mois et délai de résolution par type</p></div>
+      <a class="panel-link" routerLink="/reclamations">Réclamations <app-icon name="arrow-right" [size]="14" /></a></div>
+    <div class="quality-body">
+      <div class="chart-box small">
+        @if (complaintsChart(); as c) { <canvas [appChart]="c" role="img" aria-label="Réclamations par mois"></canvas> }
+      </div>
+      <table class="table compact">
+        <thead><tr><th>Type</th><th class="right">Total</th><th class="right">Ouvertes</th><th class="right">Résolution moy.</th></tr></thead>
+        <tbody>
+          @for (c of a?.complaintsByType ?? []; track c.type) {
+            <tr>
+              <td class="primary-cell">{{ c.type | label: typeLabels }}</td>
+              <td class="right num">{{ c.count }}</td>
+              <td class="right num" [class.overdue-text]="c.open > 0">{{ c.open }}</td>
+              <td class="right num">{{ c.averageResolutionDays !== null ? (c.averageResolutionDays | qty) + ' j' : '–' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

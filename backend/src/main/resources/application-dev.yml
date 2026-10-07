@@ -1,0 +1,16 @@
+# Development profile: demo company, catalogue, clients and twelve months of documents.
+novafer:
+  jwt:
+    # Development-only fallback. Set JWT_SECRET for any shared or production deployment.
+    secret: ${JWT_SECRET:dev-only-novafer-jwt-secret-change-me-0123456789abcdef}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:8086}
+  demo:
+    enabled: ${DEMO_DATA:true}
+    # Password shared by the demo accounts (see README). Development only.
+    password: ${DEMO_PASSWORD:Novafer@2026}
+
+logging:
+  level:
+    tn.novafer: DEBUG
+    org.flywaydb: INFO

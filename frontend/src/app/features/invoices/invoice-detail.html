@@ -1,0 +1,203 @@
+<div class="page">
+  <a class="back-link" routerLink="/factures"><app-icon name="arrow-left" [size]="15" /> Factures</a>
+  @if (invoice.error()) {
+    <div class="alert" role="alert"><app-icon name="circle-alert" /> Cette facture est introuvable ou n'a pas pu être chargée.</div>
+  }
+  @if (invoice.value(); as i) {
+    <header class="page-head">
+      <div>
+        <div class="title-row">
+          <h1>{{ i.number ? 'Facture ' + i.number : 'Brouillon de facture' }}</h1>
+          <app-status kind="invoice" [value]="i.status" [overdue]="i.overdue" />
+        </div>
+        <p class="lead"><a [routerLink]="['/clients', i.client.id]">{{ i.client.companyName }}</a>
+          @if (i.subject) { · {{ i.subject }} }</p>
+      </div>
+      <div class="actions">
+        <a class="btn" [routerLink]="['/imprimer', 'facture', i.id]" target="_blank"><app-icon name="printer" /> Imprimer / PDF</a>
+        @if (canEdit()) {
+          @if (i.status === 'BROUILLON') {
+            <a class="btn" [routerLink]="['/factures', i.id, 'modifier']"><app-icon name="pencil" /> Modifier</a>
+            <button type="button" class="btn btn-primary" (click)="issue(i)" [disabled]="busy()"><app-icon name="send" /> Émettre la facture</button>
+          }
+          @if (i.overdue) {
+            <a class="btn" [routerLink]="['/imprimer', 'relance', i.id]" target="_blank"><app-icon name="send" /> Relancer</a>
+          }
+          @if (i.status === 'EMISE' || i.status === 'PARTIELLEMENT_PAYEE') {
+            <button type="button" class="btn btn-primary" (click)="openPayment(i)"><app-icon name="wallet" /> Enregistrer un règlement</button>
+          }
+        }
+      </div>
+    </header>
+
+    @if (i.status === 'BROUILLON') {
+      <div class="alert info banner"><app-icon name="circle-alert" />
+        Brouillon : vérifiez les lignes puis émettez la facture pour lui attribuer son numéro légal.</div>
+    }
+    @if (i.status === 'ANNULEE') {
+      <div class="alert warning banner"><app-icon name="alert-triangle" /> Facture annulée le {{ i.cancelledAt | frDateTime }}.</div>
+    }
+
+    <div class="grid-main">
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-head"><h2>Détail de la facture</h2><span class="subtle num">{{ i.lines.length }} ligne{{ i.lines.length > 1 ? 's' : '' }}</span></div>
+          <app-doc-lines [lines]="i.lines" [totals]="i.totals" />
+        </section>
+
+        @if (i.status !== 'BROUILLON') {
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Règlements</h2>
+                <p>{{ i.payments.length ? i.payments.length + ' règlement' + (i.payments.length > 1 ? 's' : '') : 'Aucun règlement reçu' }}</p>
+              </div>
+            </div>
+            @if (i.payments.length) {
+              <div class="table-wrap">
+                <table class="table compact">
+                  <thead><tr><th>Date</th><th>Mode</th><th>Référence</th><th>Saisi par</th><th class="right">Montant</th><th></th></tr></thead>
+                  <tbody>
+                    @for (p of i.payments; track p.id) {
+                      <tr>
+                        <td class="num">{{ p.paymentDate | frDate }}</td>
+                        <td>{{ p.method | label: methodLabels }}</td>
+                        <td class="num">{{ p.reference ?? '–' }}</td>
+                        <td class="muted">{{ p.createdBy ?? '–' }}</td>
+                        <td class="right num primary-cell">{{ p.amount | money }}</td>
+                        <td class="right">
+                          @if (canEdit() && i.status !== 'ANNULEE') {
+                            <button type="button" class="btn btn-ghost btn-sm btn-icon" (click)="removePayment(i, p.id)" aria-label="Supprimer le règlement">
+                              <app-icon name="trash" [size]="14" />
+                            </button>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </section>
+        }
+      </div>
+
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-body balance">
+            <span class="label">Reste à payer</span>
+            <span class="amount-lg num" [class.danger]="i.overdue">{{ (i.status === 'ANNULEE' ? 0 : i.balanceDue) | money }}<span class="currency">TND</span></span>
+            <div class="progress" role="progressbar" [attr.aria-valuenow]="paidPct()" aria-valuemin="0" aria-valuemax="100" aria-label="Part réglée">
+              <span [style.width.%]="paidPct()"></span>
+            </div>
+            <div class="split">
+              <span>Réglé <strong class="num">{{ i.amountPaid | money }}</strong></span>
+              <span>Total <strong class="num">{{ i.totals.totalTtc | money }}</strong></span>
+            </div>
+            @if (i.overdue) {
+              <p class="late"><span class="age-dot" [class]="'age-dot heat-' + heat(i.daysOverdue)"></span>
+                Échue depuis {{ i.daysOverdue }} jour{{ i.daysOverdue > 1 ? 's' : '' }}</p>
+            }
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Informations</h2></div>
+          <div class="panel-body">
+            <dl class="dl">
+              <dt>Client</dt><dd><a [routerLink]="['/clients', i.client.id]">{{ i.client.companyName }}</a></dd>
+              @if (i.client.matriculeFiscal) { <dt>Matricule fiscal</dt><dd class="num">{{ i.client.matriculeFiscal }}</dd> }
+              <dt>Date</dt><dd class="num">{{ i.issueDate | frDate: true }}</dd>
+              <dt>Échéance</dt><dd class="num" [class.overdue-text]="i.overdue">{{ i.dueDate | frDate: true }}</dd>
+              @if (i.quoteId) { <dt>Devis d'origine</dt><dd><a [routerLink]="['/devis', i.quoteId]">{{ i.quoteNumber }}</a></dd> }
+              @if (i.issuedAt) { <dt>Émise le</dt><dd class="num">{{ i.issuedAt | frDateTime }}</dd> }
+              <dt>Créée par</dt><dd>{{ i.createdBy ?? '–' }}</dd>
+            </dl>
+          </div>
+        </section>
+
+        @if (i.notes) {
+          <section class="panel">
+            <div class="panel-head"><h2>Notes</h2></div>
+            <div class="panel-body notes">{{ i.notes }}</div>
+          </section>
+        }
+
+        <div class="side-actions">
+          @if (i.number) {
+            <a class="btn" routerLink="/reclamations/nouvelle" [queryParams]="{ client: i.client.id, facture: i.id }">
+              <app-icon name="complaint" /> Ouvrir une réclamation</a>
+          }
+          @if (canEdit() && i.status === 'EMISE' && i.amountPaid === 0) {
+            <button type="button" class="btn btn-danger" (click)="openCancel()"><app-icon name="x-circle" /> Annuler la facture</button>
+          }
+          @if (canEdit() && i.status === 'BROUILLON') {
+            <button type="button" class="btn btn-danger" (click)="remove(i)"><app-icon name="trash" /> Supprimer le brouillon</button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <dialog #payDialog class="dialog" (cancel)="closePayment()">
+      <form (ngSubmit)="submitPayment(i)">
+        <div class="dialog-head">
+          <div>
+            <h2>Enregistrer un règlement</h2>
+            <p>Facture {{ i.number }} · reste à payer {{ i.balanceDue | money }} TND</p>
+          </div>
+        </div>
+        <div class="dialog-body form-grid">
+          <div class="field span-6">
+            <label for="pay-amount">Montant (TND)</label>
+            <input id="pay-amount" class="input num" type="text" inputmode="decimal" autocomplete="off" name="amount" [(ngModel)]="pay.amount" required />
+          </div>
+          <div class="field span-6">
+            <label for="pay-date">Date de règlement</label>
+            <input id="pay-date" class="input" type="date" name="paymentDate" [(ngModel)]="pay.paymentDate" required />
+          </div>
+          <div class="field span-6">
+            <label for="pay-method">Mode</label>
+            <select id="pay-method" class="select" name="method" [(ngModel)]="pay.method">
+              @for (m of methods; track m.value) { <option [ngValue]="m.value">{{ m.label }}</option> }
+            </select>
+          </div>
+          <div class="field span-6">
+            <label for="pay-ref">Référence</label>
+            <input id="pay-ref" class="input" name="reference" [(ngModel)]="pay.reference" placeholder="N° de chèque, de virement…" />
+          </div>
+          <div class="field span-12">
+            <label for="pay-notes">Commentaire</label>
+            <input id="pay-notes" class="input" name="notes" [(ngModel)]="pay.notes" />
+          </div>
+          @if (payError()) { <div class="alert span-12" role="alert"><app-icon name="circle-alert" /> {{ payError() }}</div> }
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn" (click)="closePayment()">Annuler</button>
+          <button type="submit" class="btn btn-primary" [disabled]="busy()">Enregistrer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog #cancelDialog class="dialog" (cancel)="closeCancel()">
+      <div class="dialog-head">
+        <div>
+          <h2>Annuler la facture {{ i.number }} ?</h2>
+          <p>Le numéro reste utilisé dans la séquence légale et les quantités sont réintégrées au stock. Cette action est définitive.</p>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <div class="field">
+          <label for="cancel-reason">Motif de l'annulation</label>
+          <textarea id="cancel-reason" class="textarea" rows="3" [(ngModel)]="cancelReason" name="reason"
+                    placeholder="Ex. erreur de quantités, refacturée"></textarea>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" (click)="closeCancel()">Retour</button>
+        <button type="button" class="btn btn-danger" (click)="submitCancel(i)" [disabled]="busy()">Annuler la facture</button>
+      </div>
+    </dialog>
+  } @else if (invoice.isLoading()) {
+    <div class="panel panel-body"><span class="skeleton"></span></div>
+  }
+</div>

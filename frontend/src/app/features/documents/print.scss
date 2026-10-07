@@ -1,0 +1,433 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 0 0 48px;
+  background: #e9ebef;
+}
+
+.toolbar-print {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.error {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-2);
+}
+
+/* The sheet is drawn at A4 proportions on screen and fills the page when printed. */
+.sheet {
+  position: relative;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 28px auto 0;
+  padding: 16mm 15mm 14mm;
+  background: #fff;
+  color: #1d2939;
+  font-size: 9.5pt;
+  line-height: 1.45;
+  box-shadow: 0 2px 4px rgba(16, 24, 40, 0.06), 0 12px 32px -8px rgba(16, 24, 40, 0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.watermark {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-28deg);
+  color: rgba(194, 52, 42, 0.08);
+  font-family: var(--font-display);
+  font-size: 92pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 7mm;
+  border-bottom: 2px solid var(--cobalt-500);
+}
+
+.logo {
+  height: 15mm;
+  width: auto;
+}
+
+.company {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  color: #475467;
+  font-size: 8.5pt;
+}
+
+.company strong {
+  color: #0f1729;
+  font-size: 10pt;
+}
+
+.title-band {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin: 7mm 0 5mm;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 22pt;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #0f1729;
+  line-height: 1;
+}
+
+.number {
+  display: block;
+  margin-top: 6px;
+  color: var(--cobalt-600);
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+.dates {
+  display: flex;
+  gap: 8mm;
+  margin: 0;
+}
+
+.dates dt,
+.party-label {
+  display: block;
+  color: #667085;
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dates dd {
+  margin: 3px 0 0;
+  color: #0f1729;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6mm;
+}
+
+.party {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4mm 5mm;
+  border: 1px solid #e4e7ec;
+  border-radius: 2mm;
+}
+
+.party.client {
+  background: #f5f7fe;
+  border-color: #dce3fa;
+}
+
+.party strong {
+  margin: 3px 0 2px;
+  color: #0f1729;
+  font-size: 10.5pt;
+}
+
+.subject {
+  margin: 5mm 0 0;
+}
+
+.subject span {
+  color: #667085;
+}
+
+.lines {
+  width: 100%;
+  margin-top: 5mm;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.lines th {
+  padding: 2.4mm 2mm;
+  background: #0f1729;
+  color: #fff;
+  font-size: 8pt;
+  font-weight: 600;
+  text-align: left;
+}
+
+.lines th:first-child {
+  border-radius: 1.5mm 0 0 1.5mm;
+}
+
+.lines th:last-child {
+  border-radius: 0 1.5mm 1.5mm 0;
+}
+
+.lines td {
+  padding: 2.4mm 2mm;
+  border-bottom: 1px solid #e4e7ec;
+  vertical-align: top;
+}
+
+.lines td.ref {
+  width: 30mm;
+  color: #475467;
+  font-size: 8pt;
+  font-variant-numeric: normal;
+}
+
+.r {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.strong {
+  color: #0f1729;
+  font-weight: 600;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: 1fr 72mm;
+  gap: 8mm;
+  margin-top: 5mm;
+  break-inside: avoid;
+}
+
+.vat {
+  width: 100%;
+  max-width: 90mm;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  font-variant-numeric: tabular-nums;
+}
+
+.vat th {
+  padding: 1.6mm 2mm;
+  border-bottom: 1px solid #d0d5dd;
+  color: #667085;
+  font-weight: 600;
+  text-align: left;
+}
+
+.vat td {
+  padding: 1.6mm 2mm;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.mention {
+  margin-top: 3mm;
+  color: #9a5b00;
+  font-size: 8.5pt;
+}
+
+.words {
+  margin-top: 4mm;
+  color: #475467;
+  font-size: 8.5pt;
+}
+
+.words strong {
+  color: #0f1729;
+  font-size: 9.5pt;
+}
+
+.totals {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.totals > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.6mm 0;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.totals dt {
+  color: #475467;
+}
+
+.totals dd {
+  margin: 0;
+  color: #0f1729;
+}
+
+.totals .grand {
+  margin-top: 2mm;
+  padding: 3mm 4mm;
+  border: 0;
+  border-radius: 2mm;
+  background: var(--cobalt-500);
+}
+
+.totals .grand dt,
+.totals .grand dd {
+  color: #fff;
+  font-weight: 700;
+  font-size: 11pt;
+}
+
+.totals .grand small {
+  font-size: 8pt;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.foot-info {
+  display: grid;
+  grid-template-columns: 1fr 72mm;
+  gap: 8mm;
+  margin-top: 7mm;
+  break-inside: avoid;
+}
+
+.foot-info > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 8.5pt;
+}
+
+.notes {
+  margin-top: 2mm;
+  white-space: pre-line;
+  color: #475467;
+}
+
+.stamp {
+  min-height: 30mm;
+  padding: 3mm;
+  border: 1px dashed #b8bfca;
+  border-radius: 2mm;
+}
+
+.legal {
+  margin-top: auto;
+  padding-top: 6mm;
+  border-top: 1px solid #e4e7ec;
+  color: #667085;
+  font-size: 7.5pt;
+  text-align: center;
+}
+
+.legal p + p {
+  margin-top: 1mm;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  :host {
+    padding: 0;
+    background: #fff;
+  }
+
+  .toolbar-print {
+    display: none;
+  }
+
+  .sheet {
+    margin: 0;
+    box-shadow: none;
+    width: auto;
+    min-height: 296mm;
+  }
+
+  .lines th,
+  .totals .grand,
+  .party.client {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@media screen and (max-width: 860px) {
+  .sheet {
+    width: auto;
+    min-height: 0;
+    margin: 12px;
+    padding: 20px 16px;
+  }
+
+  .parties,
+  .bottom,
+  .foot-info {
+    grid-template-columns: 1fr;
+  }
+
+  .title-band {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Reminder letter */
+.letter-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6mm;
+  align-items: start;
+  margin-top: 10mm;
+}
+
+.letter-top .client {
+  grid-column: 2;
+}
+
+.place {
+  grid-column: 2;
+  color: #475467;
+}
+
+.letter-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  margin-top: 6mm;
+  font-size: 10pt;
+  line-height: 1.6;
+}
+
+.letter-body .lines {
+  margin: 1mm 0;
+}
+
+.signoff {
+  margin-top: 6mm;
+}
+
+.demo-note {
+  color: #9a5b00;
+  font-weight: 600;
+}

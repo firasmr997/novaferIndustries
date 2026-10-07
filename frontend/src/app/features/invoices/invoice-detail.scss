@@ -1,0 +1,73 @@
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.banner {
+  margin-bottom: 20px;
+}
+
+.balance {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.balance .label {
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.balance .amount-lg.danger {
+  color: var(--danger);
+}
+
+.progress {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--success);
+}
+
+.split {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.split strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.late {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.notes {
+  white-space: pre-line;
+}
+
+.side-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

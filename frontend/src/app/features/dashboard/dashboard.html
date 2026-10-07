@@ -1,0 +1,262 @@
+<div class="page">
+  <header class="page-head">
+    <div>
+      <h1>{{ greeting() }}</h1>
+      <p class="lead">Situation au {{ todayLabel }}</p>
+    </div>
+    <div class="actions">
+      <a class="btn" routerLink="/analyses"><app-icon name="bar-chart" /> Analyses détaillées</a>
+    </div>
+  </header>
+
+  @if (data.error()) {
+    <div class="alert" role="alert">
+      <app-icon name="circle-alert" /> Le tableau de bord n'a pas pu être chargé.
+      <button type="button" class="btn btn-sm" (click)="data.reload()">Réessayer</button>
+    </div>
+  }
+
+  @let d = data.value();
+
+  <!-- Money first: four figures in one strip -->
+  <section class="panel kpis" aria-label="Indicateurs financiers">
+    <div class="kpi">
+      <span class="kpi-label">Chiffre d'affaires · {{ monthName }}</span>
+      @if (d) {
+        <span class="amount-lg num">{{ d.kpis.revenueMonth | money: false }}<span class="currency">TND HT</span></span>
+        <span class="kpi-sub">
+          @if (monthDelta(); as v) {
+            <span class="delta" [class.up]="v >= 0" [class.down]="v < 0">
+              <app-icon [name]="v >= 0 ? 'arrow-up-right' : 'arrow-down-right'" [size]="14" />
+              {{ v >= 0 ? '+' : '' }}{{ v.toFixed(1).replace('.', ',') }} %
+            </span>
+            vs 1–{{ dayOfMonth }} {{ prevMonthName }}
+          } @else { Rien facturé du 1 au {{ dayOfMonth }} {{ prevMonthName }} }
+        </span>
+        <span class="kpi-sub">{{ prevMonthName }} complet : <span class="num">{{ d.kpis.revenuePrevMonth | money: false }}</span></span>
+      } @else { <span class="skeleton big"></span><span class="skeleton"></span> }
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Cumul {{ year }}</span>
+      @if (d) {
+        <span class="amount-lg num">{{ d.kpis.revenueYtd | money: false }}<span class="currency">TND HT</span></span>
+        @if (ytdDelta(); as v) {
+          <span class="kpi-sub">
+            <span class="delta" [class.up]="v >= 0" [class.down]="v < 0">
+              <app-icon [name]="v >= 0 ? 'arrow-up-right' : 'arrow-down-right'" [size]="14" />
+              {{ v >= 0 ? '+' : '' }}{{ v.toFixed(1).replace('.', ',') }} %
+            </span>
+            vs même période {{ year - 1 }}
+          </span>
+        }
+      } @else { <span class="skeleton big"></span><span class="skeleton"></span> }
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Encours clients</span>
+      @if (d) {
+        <span class="amount-lg num">{{ d.kpis.receivables | money: false }}<span class="currency">TND TTC</span></span>
+        <span class="kpi-sub"><span class="num">{{ openInvoicesTotal() }}</span> factures ouvertes · encaissé ce mois
+          <span class="num">{{ d.kpis.collectedMonth | money: false }}</span></span>
+      } @else { <span class="skeleton big"></span><span class="skeleton"></span> }
+    </div>
+    <a class="kpi link" routerLink="/factures" [queryParams]="{ retard: 1 }">
+      <span class="kpi-label">En retard de paiement</span>
+      @if (d) {
+        <span class="amount-lg num" [class.danger]="d.kpis.overdueAmount > 0">{{ d.kpis.overdueAmount | money: false }}<span class="currency">TND TTC</span></span>
+        <span class="kpi-sub"><span class="num">{{ d.kpis.overdueCount }}</span> factures échues · voir la liste
+          <app-icon name="arrow-right" [size]="13" /></span>
+      } @else { <span class="skeleton big"></span><span class="skeleton"></span> }
+    </a>
+  </section>
+
+  <div class="grid-main row">
+    <section class="panel">
+      <div class="panel-head flush">
+        <div>
+          <h2>Facturé et encaissé</h2>
+          <p>12 derniers mois · le mois en cours est en clair</p>
+        </div>
+        <ul class="legend" aria-hidden="true">
+          <li><span class="swatch bar"></span> Facturé HT</li>
+          <li><span class="swatch line"></span> Encaissé TTC</li>
+        </ul>
+      </div>
+      <div class="chart-box">
+        @if (chart(); as c) {
+          <canvas [appChart]="c" aria-label="Montants facturés et encaissés par mois" role="img"></canvas>
+        } @else { <span class="skeleton chart"></span> }
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head flush">
+        <div>
+          <h2>Antériorité des créances</h2>
+          <p>Encours TTC par retard de paiement</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        @if (d) { <app-aging [buckets]="d.aging" /> } @else { <span class="skeleton chart small"></span> }
+      </div>
+    </section>
+  </div>
+
+  <div class="grid-main row">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Factures échues</h2>
+          <p>Les plus anciennes d'abord</p>
+        </div>
+        <a class="panel-link" routerLink="/factures" [queryParams]="{ retard: 1 }">Tout voir <app-icon name="arrow-right" [size]="14" /></a>
+      </div>
+      <div class="table-wrap">
+        <table class="table compact overdue-table">
+          <thead>
+            <tr>
+              <th>Facture</th>
+              <th>Client</th>
+              <th>Échéance</th>
+              <th>Retard</th>
+              <th class="right">Reste à payer</th>
+              <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of d?.overdueInvoices ?? []; track i.id) {
+              <tr class="clickable" (click)="open('/factures', i.id)">
+                <td><a class="code" [routerLink]="['/factures', i.id]" (click)="$event.stopPropagation()">{{ i.number }}</a></td>
+                <td class="primary-cell">{{ i.client.label }}</td>
+                <td class="num">{{ i.dueDate | frDate }}</td>
+                <td><span class="late"><span class="age-dot" [class]="'age-dot heat-' + heat(i.daysOverdue)"></span>
+                  <span class="num">{{ i.daysOverdue }} j</span></span></td>
+                <td class="right num primary-cell">{{ i.balanceDue | money }}</td>
+                <td class="right">
+                  <div class="row-actions nowrap">
+                    @if (auth.can('invoices')) {
+                      <a class="btn btn-sm" [routerLink]="['/factures', i.id]" [queryParams]="{ encaisser: 1 }" (click)="$event.stopPropagation()">Encaisser</a>
+                    }
+                    <a class="btn btn-sm btn-ghost btn-icon" [routerLink]="['/imprimer', 'relance', i.id]" target="_blank" (click)="$event.stopPropagation()"
+                       [attr.aria-label]="'Relancer : imprimer une lettre de relance pour ' + i.number" title="Relancer (lettre de relance)"><app-icon name="send" [size]="14" /></a>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              @if (d) {
+                <tr><td colspan="6"><div class="empty"><strong>Aucune facture en retard</strong>Tous les clients sont à jour.</div></td></tr>
+              } @else {
+                @for (n of [1, 2, 3, 4]; track n) { <tr><td colspan="6"><span class="skeleton"></span></td></tr> }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+      <!-- Phones: the same factures as stacked rows, amount always visible. -->
+      <ul class="list overdue-list">
+        @for (i of d?.overdueInvoices ?? []; track i.id) {
+          <li>
+            <a [routerLink]="['/factures', i.id]">
+              <span class="main">
+                <span class="title">{{ i.client.label }}</span>
+                <span class="meta"><span class="code">{{ i.number }}</span> · échue le {{ i.dueDate | frDate }}</span>
+              </span>
+              <span class="end">
+                <span class="num value">{{ i.balanceDue | money: false }}</span>
+                <span class="late small"><span class="age-dot" [class]="'age-dot heat-' + heat(i.daysOverdue)"></span><span class="num">{{ i.daysOverdue }} j</span></span>
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Devis en attente</h2>
+          @if (d) {
+            <p><span class="num">{{ d.kpis.pendingQuotesCount }}</span> envoyés ·
+              <span class="num">{{ d.kpis.pendingQuotesAmount | money: false }}</span> TND HT</p>
+          }
+        </div>
+        <a class="panel-link" routerLink="/devis" [queryParams]="{ statut: 'ENVOYE' }">Tout voir <app-icon name="arrow-right" [size]="14" /></a>
+      </div>
+      <ul class="list">
+        @for (q of d?.pendingQuotes ?? []; track q.id) {
+          <li>
+            <a [routerLink]="['/devis', q.id]">
+              <span class="main">
+                <span class="title">{{ q.client.label }}</span>
+                <span class="meta"><span class="code">{{ q.number }}</span> ·
+                  @if (daysLeft(q.validUntil) >= 0) { expire dans {{ daysLeft(q.validUntil) }} j }
+                  @else { expiré }
+                </span>
+              </span>
+              <span class="num value">{{ q.totalHt | money: false }}</span>
+            </a>
+          </li>
+        } @empty {
+          @if (d) { <li class="empty"><strong>Aucun devis en attente</strong></li> }
+        }
+      </ul>
+      @if (d) {
+        <div class="panel-foot">
+          <span>Taux de transformation (90 j)</span>
+          <strong class="num">{{ d.kpis.conversionRate.toString().replace('.', ',') }} %</strong>
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="grid-2 row">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Réclamations à traiter</h2>
+          @if (d) { <p><span class="num">{{ d.kpis.openComplaints }}</span> {{ d.kpis.openComplaints > 1 ? 'ouvertes' : 'ouverte' }}, par urgence</p> }
+        </div>
+        <a class="panel-link" routerLink="/reclamations">Tout voir <app-icon name="arrow-right" [size]="14" /></a>
+      </div>
+      <ul class="list">
+        @for (c of d?.urgentComplaints ?? []; track c.id) {
+          <li>
+            <a [routerLink]="['/reclamations', c.id]">
+              <span class="main">
+                <span class="title">{{ c.subject }}</span>
+                <span class="meta">{{ c.client.label }} · {{ c.type | label: complaintType }} · ouverte {{ ago(c.ageDays) }}</span>
+              </span>
+              <app-status kind="priority" [value]="c.priority" />
+            </a>
+          </li>
+        } @empty {
+          @if (d) { <li class="empty"><strong>Aucune réclamation ouverte</strong></li> }
+        }
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Stock sous le seuil</h2>
+          @if (d) { <p><span class="num">{{ d.kpis.lowStockCount }}</span> références à réapprovisionner</p> }
+        </div>
+        <a class="panel-link" routerLink="/produits" [queryParams]="{ alerte: 1 }">Tout voir <app-icon name="arrow-right" [size]="14" /></a>
+      </div>
+      <ul class="list">
+        @for (p of d?.lowStock ?? []; track p.id) {
+          <li>
+            <a [routerLink]="['/stock']" [queryParams]="{ produit: p.id }">
+              <span class="main">
+                <span class="title">{{ p.name }}</span>
+                <span class="meta"><span class="code">{{ p.reference }}</span> · seuil {{ p.minStock | qty }} {{ p.unit }}</span>
+              </span>
+              <span class="stock num" [class.negative]="p.stockQuantity < 0">{{ p.stockQuantity | qty }} <small>{{ p.unit }}</small></span>
+            </a>
+          </li>
+        } @empty {
+          @if (d) { <li class="empty"><strong>Tous les stocks sont au-dessus du seuil</strong></li> }
+        }
+      </ul>
+    </section>
+  </div>
+</div>

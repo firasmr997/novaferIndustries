@@ -1,0 +1,599 @@
+<title>Novafer Brand Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a fixed section index on the left, one long reference column on the right; each section is a chapter of the system. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f2f4f7;
+  --border: #e4e7ec;
+  --ink: #0f1729;
+  --text: #1d2939;
+  --text-2: #475467;
+  --text-3: #667085;
+  --cobalt: #2b4acb;
+  --cobalt-ink: #233dad;
+  --cobalt-soft: #eef2fd;
+  --night: #13204f;
+  --ember: #e8833a;
+  --good: #0f7a55;
+  --bad: #c2342a;
+  --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1020; --surface: #121a2e; --surface-2: #19223a; --border: #26304a; --ink: #f1f4fb; --text: #d8deeb;
+    --text-2: #a9b3c7; --text-3: #8b96ad; --cobalt: #6f86ee; --cobalt-ink: #9aabf5; --cobalt-soft: #1b2650;
+    --good: #4cc79a; --bad: #ff8a80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1020; --surface: #121a2e; --surface-2: #19223a; --border: #26304a; --ink: #f1f4fb; --text: #d8deeb;
+  --text-2: #a9b3c7; --text-3: #8b96ad; --cobalt: #6f86ee; --cobalt-ink: #9aabf5; --cobalt-soft: #1b2650;
+  --good: #4cc79a; --bad: #ff8a80; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 15px/1.6 var(--font-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { margin: 0; color: var(--ink); font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.1; }
+h3 { font-size: 19px; line-height: 1.3; margin-bottom: 8px; }
+h4 { font-size: 15px; font-family: var(--font-body); letter-spacing: 0; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--cobalt-ink); }
+::selection { background: #dce3fa; color: #0f1729; }
+code, .mono { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.88em; }
+.num { font-variant-numeric: tabular-nums; }
+
+.shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }
+.index { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; padding: 28px 22px; border-right: 1px solid var(--border); background: var(--surface); overflow-y: auto; }
+.index .brandline { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; color: var(--ink); font: 600 15px var(--font-display); }
+.index .brandline svg { width: 30px; height: 30px; }
+.index nav { display: flex; flex-direction: column; gap: 2px; }
+.index a { padding: 7px 10px; border-radius: 7px; color: var(--text-2); font-size: 14px; font-weight: 500; text-decoration: none; }
+.index a:hover { background: var(--surface-2); color: var(--ink); }
+.index .meta { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border); color: var(--text-3); font-size: 12.5px; line-height: 1.5; }
+
+main { min-width: 0; padding-inline: clamp(16px, 4vw, 56px); padding-block: 0 80px; }
+section { padding-block: 72px 8px; max-width: 1080px; }
+section + section { border-top: 1px solid var(--border); margin-top: 56px; }
+.lead { margin-top: 14px; color: var(--text-2); font-size: 17px; }
+.label { display: block; color: var(--text-3); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.grid { display: grid; gap: 20px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.block { margin-top: 40px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; min-width: 0; }
+.note { color: var(--text-3); font-size: 13.5px; }
+
+/* Cover */
+.cover { position: relative; margin-top: 28px; padding: clamp(28px, 6vw, 64px); border-radius: 20px; background: #13204f; color: #fff; overflow: hidden; }
+.cover .logo-xl { width: min(440px, 100%); }
+.cover .logo-xl svg { width: 100%; height: auto; display: block; }
+.cover .tagline { margin-top: 36px; font: 600 clamp(26px, 4vw, 40px)/1.1 var(--font-display); letter-spacing: -0.02em; color: #fff; }
+.cover .tagline span { color: #e8833a; }
+.cover p { margin-top: 14px; color: #c3cbea; font-size: 16px; }
+.cover .facts { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 36px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.16); }
+.cover .facts div { display: flex; flex-direction: column; gap: 2px; }
+.cover .facts dt { color: #9fb0ea; font-size: 12.5px; }
+.cover .facts dd { margin: 0; font-weight: 600; }
+.cover dl { margin: 0; }
+
+/* Values */
+.value h4 { margin-bottom: 6px; }
+.value p { color: var(--text-2); font-size: 14px; }
+.value .k { display: inline-block; margin-bottom: 12px; color: var(--cobalt-ink); font: 600 13px var(--font-display); }
+.spectrum { display: flex; flex-direction: column; gap: 14px; }
+.spectrum .row { display: grid; grid-template-columns: 130px minmax(0, 1fr) 130px; align-items: center; gap: 14px; font-size: 14px; }
+.spectrum .row span:last-child { text-align: right; }
+.spectrum .track { position: relative; height: 6px; border-radius: 3px; background: var(--surface-2); }
+.spectrum .dot { position: absolute; top: 50%; width: 16px; height: 16px; border-radius: 50%; background: var(--cobalt); border: 3px solid var(--surface); transform: translate(-50%, -50%); box-shadow: 0 0 0 1px var(--border); }
+
+/* Logo */
+.stage { display: grid; place-items: center; min-height: 190px; padding: 28px; border-radius: 14px; border: 1px solid var(--border); background: #fff; }
+.stage.night { background: #13204f; border-color: #13204f; }
+.stage.cobalt { background: #2b4acb; border-color: #2b4acb; }
+.stage.paper { background: #f6f7f9; }
+.stage svg { max-width: 100%; height: auto; }
+.stage .w-logo { width: 260px; }
+.stage .w-stack { width: 150px; }
+.stage .w-mark { width: 76px; }
+.caption { margin-top: 10px; }
+.caption strong { display: block; color: var(--ink); font-size: 14px; }
+.caption span { color: var(--text-3); font-size: 13px; }
+.anatomy { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+.construct { position: relative; aspect-ratio: 1; max-width: 360px; width: 100%; margin: 0 auto; }
+.construct svg { width: 100%; height: 100%; display: block; }
+.legend-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.legend-list li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; }
+.legend-list b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--cobalt-soft); color: var(--cobalt-ink); font: 600 12px var(--font-body); }
+.legend-list p { color: var(--text-2); font-size: 14px; }
+.legend-list strong { color: var(--ink); }
+.clear { position: relative; display: grid; place-items: center; padding: 36px; border-radius: 14px; background: #fff; border: 1px solid var(--border); }
+.clear .zone { position: relative; padding: 26px; outline: 1.5px dashed #2b4acb; outline-offset: 0; background: repeating-linear-gradient(45deg, rgba(43,74,203,.07) 0 6px, transparent 6px 12px); }
+.clear .zone .inner { background: #fff; padding: 0; }
+.clear .zone svg { width: 240px; display: block; }
+.clear .x { position: absolute; color: #2b4acb; font: 600 12px var(--font-body); }
+.sizes { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 28px; padding: 26px; border-radius: 14px; background: #fff; border: 1px solid var(--border); }
+.sizes figure { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; color: #667085; font-size: 12px; }
+.misuse { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.misuse .stage { min-height: 150px; position: relative; overflow: hidden; }
+.misuse .stage svg { width: 180px; }
+.misuse .x-badge { position: absolute; top: 10px; left: 10px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #c2342a; color: #fff; font: 700 13px var(--font-body); }
+.m-stretch svg { transform: scaleX(1.45); }
+.m-rotate svg { transform: rotate(-12deg); }
+.m-recolor svg path, .m-recolor svg rect { fill: #14a38b !important; }
+.m-shadow svg { filter: drop-shadow(4px 6px 3px rgba(0,0,0,.45)); }
+.m-outline svg path, .m-outline svg rect { fill: none !important; stroke: #0f1729; stroke-width: 0.8; }
+.m-busy { background: repeating-linear-gradient(135deg, #e8833a 0 14px, #f0b43c 14px 28px, #14a38b 28px 42px) !important; }
+
+/* Color */
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.swatch { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+.swatch .chip { height: 128px; padding: 14px; display: flex; align-items: flex-end; font: 600 15px var(--font-display); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), inset 0 -1px 0 var(--border); }
+.swatch .info { padding: 14px 16px 16px; font-size: 13px; }
+.swatch .info strong { display: block; color: var(--ink); font-size: 14px; margin-bottom: 6px; }
+.swatch dl { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 3px 8px; margin: 0; color: var(--text-2); }
+.swatch dt { color: var(--text-3); }
+.swatch dd { margin: 0; font-variant-numeric: tabular-nums; }
+.ramp { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.ramp div { padding: 46px 10px 10px; font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.proportion { display: flex; height: 54px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.proportion div { display: flex; align-items: flex-end; padding: 8px 10px; font-size: 12px; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { padding: 10px 12px; text-align: left; color: var(--text-3); font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--border); }
+td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.pill { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.pass { background: #e7f6ef; color: #0f7a55; }
+.fail { background: #fdecea; color: #c2342a; }
+.sample { display: inline-flex; align-items: center; justify-content: center; min-width: 92px; height: 32px; padding: 0 12px; border-radius: 7px; font-weight: 600; font-size: 13px; }
+
+/* Type */
+.specimen { padding: 28px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+.specimen .big { font-size: clamp(56px, 9vw, 104px); line-height: 1; color: var(--ink); letter-spacing: -0.03em; }
+.specimen .glyphs { margin-top: 14px; color: var(--text-2); font-size: 20px; letter-spacing: 0.02em; word-break: break-all; }
+.specimen .meta { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--text-3); font-size: 13px; }
+.scale td:first-child { color: var(--text-3); white-space: nowrap; }
+.scale .demo { color: var(--ink); white-space: nowrap; }
+.figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.figures .card div { margin-top: 10px; font-size: 18px; color: var(--ink); line-height: 1.7; }
+
+/* Icons */
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 12px; }
+.icons figure { margin: 0; padding: 18px 8px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--ink); }
+.icons figcaption { color: var(--text-3); font-size: 12px; text-align: center; }
+
+/* Voice */
+.dodont { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.dodont .card { padding: 0; overflow: hidden; }
+.dodont .head { padding: 12px 18px; font-weight: 600; font-size: 13.5px; }
+.dodont .do .head { background: #e7f6ef; color: #0f7a55; }
+.dodont .dont .head { background: #fdecea; color: #c2342a; }
+.dodont ul { margin: 0; padding: 6px 18px 16px; list-style: none; }
+.dodont li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14.5px; color: var(--ink); }
+.dodont li:last-child { border-bottom: 0; }
+.dodont li small { display: block; color: var(--text-3); font-size: 12.5px; margin-top: 2px; }
+.glossary dt { color: var(--ink); font-weight: 600; }
+.glossary dd { margin: 0 0 12px; color: var(--text-2); font-size: 14px; }
+.glossary { margin: 0; columns: 2 280px; column-gap: 32px; }
+.glossary div { break-inside: avoid; }
+
+/* Applications */
+.shot { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: #fff; }
+.shot img { display: block; width: 100%; height: auto; }
+.bizcards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.bizcard { aspect-ratio: 85 / 55; max-width: 100%; border-radius: 12px; padding: 7%; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 2px rgba(16,24,40,.06), 0 14px 30px -12px rgba(16,24,40,.25); }
+.bizcard.front { background: #13204f; color: #fff; }
+.bizcard.front svg { width: 62%; }
+.bizcard.front .tl { color: #c3cbea; font-size: clamp(11px, 1.4vw, 13px); }
+.bizcard.back { background: #fff; color: #0f1729; border: 1px solid #e4e7ec; }
+.bizcard.back .who strong { display: block; font: 600 clamp(14px, 2vw, 18px) 'Archivo', sans-serif; }
+.bizcard.back .who span { color: #475467; font-size: clamp(11px, 1.3vw, 13px); }
+.bizcard.back .contact { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; font-size: clamp(10px, 1.2vw, 12px); color: #475467; line-height: 1.5; }
+.bizcard.back .contact svg { width: 30px; flex: none; }
+.signature { padding: 22px; border-radius: 14px; background: #fff; border: 1px solid #e4e7ec; color: #1d2939; font: 400 14px/1.5 Arial, sans-serif; }
+.signature .sig { display: flex; gap: 16px; align-items: center; padding-top: 14px; border-top: 2px solid #2b4acb; max-width: 520px; }
+.signature .sig svg { width: 46px; flex: none; }
+.signature strong { color: #0f1729; }
+.signature span { color: #475467; font-size: 13px; }
+.signs { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.sign { display: flex; align-items: center; justify-content: center; border-radius: 14px; background: #13204f; padding: 36px; min-height: 220px; }
+.sign svg { width: min(360px, 100%); }
+.appicons { display: flex; align-items: flex-end; gap: 22px; padding: 26px; border-radius: 14px; background: #fff; border: 1px solid #e4e7ec; flex-wrap: wrap; }
+.appicons figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #667085; font-size: 12px; }
+.files li { padding: 10px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; font-size: 14px; }
+.files { margin: 0; padding: 0; list-style: none; }
+.files code { color: var(--ink); overflow-wrap: anywhere; }
+.files span { color: var(--text-3); font-size: 13px; text-align: right; }
+
+@media (max-width: 980px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .index { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); padding: 16px; }
+  .index nav { flex-direction: row; flex-wrap: wrap; }
+  .index .meta { display: none; }
+  .index .brandline { margin-bottom: 10px; }
+  .g4, .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g3, .misuse { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .anatomy, .signs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .g2, .g3, .g4, .swatches, .misuse, .figures, .dodont, .bizcards { grid-template-columns: minmax(0, 1fr); }
+  .spectrum .row { grid-template-columns: 90px minmax(0, 1fr) 90px; font-size: 13px; }
+  section { padding-block: 48px 8px; }
+  .ramp div { padding-top: 34px; font-size: 10.5px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+
+<div class="shell">
+  <aside class="index">
+    <div class="brandline"><!--SVG:novafer-app-icon--> Brand guidelines</div>
+    <nav aria-label="Sections">
+      <a href="#brand">Brand</a>
+      <a href="#logo">Logo</a>
+      <a href="#color">Color</a>
+      <a href="#type">Typography</a>
+      <a href="#icons">Iconography</a>
+      <a href="#voice">Voice &amp; writing</a>
+      <a href="#applications">Applications</a>
+      <a href="#files">Files</a>
+    </nav>
+    <p class="meta">Novafer Industries · version 1.0 · October 2026. Name not yet checked for trademark availability in Tunisia.</p>
+  </aside>
+
+  <main>
+    <section id="brand" style="padding-top: 28px; border-top: 0; margin-top: 0;">
+      <div class="cover">
+        <div class="logo-xl"><!--SVG:novafer-logo-reversed--></div>
+        <p class="tagline">Forgé avec <span>précision</span>.</p>
+        <p>Novafer Industries manufactures metal and industrial parts in Ben Arous, Tunisia: fasteners, laser-cut sheet, structural steel, machined parts, hydraulics and transmission components, sold to builders, manufacturers and maintenance teams.</p>
+        <dl class="facts">
+          <div><dt>Name</dt><dd>Nova + fer: new iron</dd></div>
+          <div><dt>Market</dt><dd>B2B, Tunisia</dd></div>
+          <div><dt>Language</dt><dd>French first</dd></div>
+          <div><dt>Since</dt><dd>2016 (RC)</dd></div>
+        </dl>
+      </div>
+
+      <div class="block">
+        <h2>The brand</h2>
+        <p class="lead">Novafer joins <em>nova</em>, a new star, with <em>fer</em>, French for iron. The spark in the logo is that star landing on the iron: the moment a raw bar becomes a precise part. Everything the brand says and shows should feel like the work itself: exact, dependable, and plainly stated.</p>
+      </div>
+
+      <div class="grid g4 block">
+        <div class="card value"><span class="k">Précision</span><h4>Exact to the millimetre</h4><p>Dimensions, quantities and prices are stated exactly. A Novafer document never rounds away a millime.</p></div>
+        <div class="card value"><span class="k">Fiabilité</span><h4>Delivered as promised</h4><p>Delivery dates, certificates and stock figures are commitments, so they appear only when they are true.</p></div>
+        <div class="card value"><span class="k">Clarté</span><h4>Readable at a glance</h4><p>Short sentences, real numbers, one idea per line. A foreman and an accountant both understand it.</p></div>
+        <div class="card value"><span class="k">Proximité</span><h4>A partner nearby</h4><p>Named contacts, direct phone lines, and a quick answer when a part is not right.</p></div>
+      </div>
+
+      <div class="block">
+        <h3>Personality</h3>
+        <p class="note" style="margin-bottom: 18px;">Where Novafer sits between two opposite traits.</p>
+        <div class="spectrum">
+          <div class="row"><span>Technical</span><div class="track"><span class="dot" style="left: 30%"></span></div><span>Casual</span></div>
+          <div class="row"><span>Serious</span><div class="track"><span class="dot" style="left: 22%"></span></div><span>Playful</span></div>
+          <div class="row"><span>Modern</span><div class="track"><span class="dot" style="left: 35%"></span></div><span>Traditional</span></div>
+          <div class="row"><span>Understated</span><div class="track"><span class="dot" style="left: 38%"></span></div><span>Bold</span></div>
+          <div class="row"><span>Local</span><div class="track"><span class="dot" style="left: 45%"></span></div><span>International</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="logo">
+      <h2>Logo</h2>
+      <p class="lead">The logo is a monogram and a wordmark. The monogram is an N built from two steel stems and a diagonal; the right stem stops short and its top becomes the ember spark. The wordmark is set in Archivo Bold and supplied as outlines; never retype it.</p>
+
+      <div class="grid g3 block">
+        <div><div class="stage"><div class="w-logo"><!--SVG:novafer-logo--></div></div><div class="caption"><strong>Primary logo</strong><span>Default on white and light grounds.</span></div></div>
+        <div><div class="stage night"><div class="w-logo"><!--SVG:novafer-logo-reversed--></div></div><div class="caption"><strong>Reversed</strong><span>On Night (#13204F) and dark photography.</span></div></div>
+        <div><div class="stage"><div class="w-stack"><!--SVG:novafer-logo-stacked--></div></div><div class="caption"><strong>Stacked</strong><span>Square formats: signage, social avatars, stamps.</span></div></div>
+        <div><div class="stage paper"><div class="w-logo"><!--SVG:novafer-logo-compact--></div></div><div class="caption"><strong>Compact</strong><span>Without “Industries”, for small or tight spaces.</span></div></div>
+        <div><div class="stage"><div class="w-logo"><!--SVG:novafer-logo-mono--></div></div><div class="caption"><strong>One colour</strong><span>Fax, engraving, laser marking, single-colour print.</span></div></div>
+        <div><div class="stage paper"><div class="w-mark"><!--SVG:novafer-app-icon--></div></div><div class="caption"><strong>App icon</strong><span>Favicon, ERP, mobile home screen.</span></div></div>
+      </div>
+
+      <div class="anatomy block">
+        <div class="construct card" style="padding: 18px;">
+          <svg viewBox="0 0 48 48" role="img" aria-label="Construction grid of the monogram">
+            <defs><pattern id="g" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M2 0H0V2" fill="none" stroke="#2b4acb" stroke-opacity=".12" stroke-width=".08"/></pattern></defs>
+            <rect width="48" height="48" rx="11" fill="#2b4acb"/>
+            <rect width="48" height="48" fill="url(#g)"/>
+            <g transform="translate(-2.1 2.9)">
+              <path fill="#fff" d="M12 13h6.4L36 36h-6.4z"/><path fill="#fff" d="M12 13h6v23h-6z"/><path fill="#fff" d="M30 22.4h6V36h-6z"/>
+              <path fill="#e8833a" d="M33 6.2Q33 13.4 40.2 13.4Q33 13.4 33 20.6Q33 13.4 25.8 13.4Q33 13.4 33 6.2Z"/>
+              <g fill="none" stroke="#e8833a" stroke-width=".18" stroke-dasharray=".6 .5">
+                <path d="M9 13H40"/><path d="M9 36H40"/><path d="M12 9V40"/><path d="M36 9V40"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <ol class="legend-list">
+          <li><b>1</b><p><strong>48-unit grid.</strong> The icon is a 48 × 48 square with an 11-unit corner radius. Every stem is 6 units wide.</p></li>
+          <li><b>2</b><p><strong>Two stems and a diagonal.</strong> Like a structural profile: the left stem runs full height, the diagonal joins the top left to the bottom right.</p></li>
+          <li><b>3</b><p><strong>The spark.</strong> A four-point star with concave sides, 14.4 units across, centred where the right stem would end. It is always Ember on colour, or the same colour as the N in one-colour use.</p></li>
+          <li><b>4</b><p><strong>Optical centring.</strong> N and spark are shifted as one group (−2.1, +2.9) so the mass sits in the middle of the square.</p></li>
+        </ol>
+      </div>
+
+      <div class="grid g2 block">
+        <div>
+          <h3>Clear space</h3>
+          <p class="note" style="margin-bottom: 14px;">Keep a margin of <strong>x</strong> on every side, where x is half the height of the icon. Nothing enters it: text, edges, other logos.</p>
+          <div class="clear"><div class="zone"><div class="inner"><!--SVG:novafer-logo--></div></div><span class="x" style="top: 12px;">x</span><span class="x" style="left: 14px;">x</span></div>
+        </div>
+        <div>
+          <h3>Minimum size</h3>
+          <p class="note" style="margin-bottom: 14px;">Below these sizes the descriptor and the spark stop reading. Use the compact logo or the icon instead.</p>
+          <div class="sizes">
+            <figure><div style="width: 120px"><!--SVG:novafer-logo--></div>120 px · 30 mm</figure>
+            <figure><div style="width: 92px"><!--SVG:novafer-logo-compact--></div>92 px · 24 mm</figure>
+            <figure><div style="width: 16px"><!--SVG:novafer-app-icon--></div>16 px · 5 mm</figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Never do this</h3>
+        <p class="note" style="margin-bottom: 14px;">The logo files are final. Do not edit, redraw or decorate them.</p>
+        <div class="misuse">
+          <div><div class="stage m-stretch"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Stretch or squash it.</span></div></div>
+          <div><div class="stage m-rotate"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Rotate or tilt it.</span></div></div>
+          <div><div class="stage m-recolor"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Recolour it outside the palette.</span></div></div>
+          <div><div class="stage m-shadow"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Add shadows, glows or bevels.</span></div></div>
+          <div><div class="stage m-outline"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Outline or hollow it out.</span></div></div>
+          <div><div class="stage m-busy"><span class="x-badge">×</span><!--SVG:novafer-logo--></div><div class="caption"><span>Place it on busy or low-contrast grounds.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="color">
+      <h2>Color</h2>
+      <p class="lead">Cobalt is the brand: a metal, a deep reliable blue. Night and Ink carry text and dark grounds. Ember is the spark and stays rare. Everything else is a cool slate neutral.</p>
+
+      <div class="swatches block">
+        <div class="swatch"><div class="chip" style="background:#2b4acb;color:#fff">Cobalt</div><div class="info"><strong>Primary · actions, logo</strong><dl><dt>HEX</dt><dd>#2B4ACB</dd><dt>RGB</dt><dd>43, 74, 203</dd><dt>CMYK</dt><dd>79 / 64 / 0 / 20</dd></dl></div></div>
+        <div class="swatch"><div class="chip" style="background:#13204f;color:#fff">Night</div><div class="info"><strong>Dark grounds, covers</strong><dl><dt>HEX</dt><dd>#13204F</dd><dt>RGB</dt><dd>19, 32, 79</dd><dt>CMYK</dt><dd>76 / 59 / 0 / 69</dd></dl></div></div>
+        <div class="swatch"><div class="chip" style="background:#0f1729;color:#fff">Ink</div><div class="info"><strong>Text, wordmark</strong><dl><dt>HEX</dt><dd>#0F1729</dd><dt>RGB</dt><dd>15, 23, 41</dd><dt>CMYK</dt><dd>63 / 44 / 0 / 84</dd></dl></div></div>
+        <div class="swatch"><div class="chip" style="background:#e8833a;color:#0f1729">Ember</div><div class="info"><strong>The spark only</strong><dl><dt>HEX</dt><dd>#E8833A</dd><dt>RGB</dt><dd>232, 131, 58</dd><dt>CMYK</dt><dd>0 / 44 / 75 / 9</dd></dl></div></div>
+      </div>
+      <p class="note" style="margin-top: 12px;">CMYK values are direct conversions for reference. Ask the printer for a coated proof and the nearest Pantone match before the first print run.</p>
+
+      <div class="block">
+        <h3>Neutrals</h3>
+        <div class="ramp">
+          <div style="background:#ffffff;color:#475467">White<br>#FFFFFF</div>
+          <div style="background:#f6f7f9;color:#475467">Ground<br>#F6F7F9</div>
+          <div style="background:#e4e7ec;color:#475467">Border<br>#E4E7EC</div>
+          <div style="background:#98a2b3;color:#0f1729">Slate 400<br>#98A2B3</div>
+          <div style="background:#667085;color:#fff">Muted<br>#667085</div>
+          <div style="background:#475467;color:#fff">Secondary<br>#475467</div>
+          <div style="background:#0f1729;color:#fff">Ink<br>#0F1729</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Proportion</h3>
+        <p class="note" style="margin-bottom: 12px;">Roughly how much of a typical surface each colour takes. Ember stays below 2 %.</p>
+        <div class="proportion">
+          <div style="flex: 58; background: #ffffff; color: #475467;">White and ground 58 %</div>
+          <div style="flex: 18; background: #e4e7ec; color: #475467;">Neutrals 18 %</div>
+          <div style="flex: 14; background: #2b4acb; color: #fff;">Cobalt 14 %</div>
+          <div style="flex: 8; background: #0f1729; color: #fff;">Ink 8 %</div>
+          <div style="flex: 2; background: #e8833a;"></div>
+        </div>
+      </div>
+
+      <div class="grid g2 block">
+        <div>
+          <h3>Status colours</h3>
+          <p class="note" style="margin-bottom: 12px;">Used for state only (paid, overdue, critical), never as decoration.</p>
+          <div class="ramp">
+            <div style="background:#0f7a55;color:#fff">Success<br>#0F7A55</div>
+            <div style="background:#9a5b00;color:#fff">Warning<br>#9A5B00</div>
+            <div style="background:#c2342a;color:#fff">Danger<br>#C2342A</div>
+            <div style="background:#14a38b;color:#fff">Teal<br>#14A38B</div>
+          </div>
+        </div>
+        <div>
+          <h3>Receivables aging</h3>
+          <p class="note" style="margin-bottom: 12px;">The ERP's lateness scale, from not yet due to more than 90 days late.</p>
+          <div class="ramp">
+            <div style="background:#2b4acb;color:#fff">Not due</div>
+            <div style="background:#f0b43c;color:#0f1729">1–30 d</div>
+            <div style="background:#e8833a;color:#0f1729">31–60 d</div>
+            <div style="background:#d6542c;color:#fff">61–90 d</div>
+            <div style="background:#a8231a;color:#fff">90+ d</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Accessible pairings</h3>
+        <p class="note" style="margin-bottom: 12px;">WCAG 2.1 contrast, measured. AA needs 4.5:1 for body text and 3:1 for large text and graphics.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pairing</th><th>Sample</th><th class="num">Ratio</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td>White on Cobalt</td><td><span class="sample" style="background:#2b4acb;color:#fff">Créer</span></td><td class="num">7.13 : 1</td><td><span class="pill pass">Text, buttons</span></td></tr>
+              <tr><td>Cobalt on White</td><td><span class="sample" style="background:#fff;color:#2b4acb;border:1px solid #e4e7ec">Tout voir</span></td><td class="num">7.13 : 1</td><td><span class="pill pass">Links, labels</span></td></tr>
+              <tr><td>Ink on White</td><td><span class="sample" style="background:#fff;color:#0f1729;border:1px solid #e4e7ec">Total TTC</span></td><td class="num">17.87 : 1</td><td><span class="pill pass">Body text</span></td></tr>
+              <tr><td>Muted on White</td><td><span class="sample" style="background:#fff;color:#667085;border:1px solid #e4e7ec">Échéance</span></td><td class="num">4.97 : 1</td><td><span class="pill pass">Captions</span></td></tr>
+              <tr><td>White on Night</td><td><span class="sample" style="background:#13204f;color:#fff">Novafer</span></td><td class="num">15.59 : 1</td><td><span class="pill pass">Covers, signage</span></td></tr>
+              <tr><td>Ember on Night</td><td><span class="sample" style="background:#13204f;color:#e8833a">précision</span></td><td class="num">5.74 : 1</td><td><span class="pill pass">One highlighted word</span></td></tr>
+              <tr><td>Ember on White</td><td><span class="sample" style="background:#fff;color:#e8833a;border:1px solid #e4e7ec">Attention</span></td><td class="num">2.71 : 1</td><td><span class="pill fail">Never for text</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="type">
+      <h2>Typography</h2>
+      <p class="lead">Two families. Archivo, an industrial grotesque, gives headings and large figures their weight. Inter carries the interface and documents because its figures align in tables. Both are free under the SIL Open Font License.</p>
+
+      <div class="grid g2 block">
+        <div class="specimen">
+          <span class="label">Display · Archivo</span>
+          <div class="big" style="font-family: var(--font-display); font-weight: 700;">Aa</div>
+          <div class="glyphs" style="font-family: var(--font-display); font-weight: 600;">ABCDEFGHIJKLM NOPQRSTUVWXYZ àâçéèêëîôùû 0123456789</div>
+          <div class="meta"><span>Semibold 600 for headings</span><span>Bold 700 for the wordmark</span><span>Tracking −1.5 % on large sizes</span></div>
+        </div>
+        <div class="specimen">
+          <span class="label">Text and interface · Inter</span>
+          <div class="big" style="font-family: var(--font-body); font-weight: 500;">Aa</div>
+          <div class="glyphs" style="font-family: var(--font-body);">ABCDEFGHIJKLM nopqrstuvwxyz àâçéèêëîôùû 0123456789</div>
+          <div class="meta"><span>Regular 400 for text</span><span>Medium 500 for labels and buttons</span><span>Semibold 600 for emphasis</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Scale</h3>
+        <div class="table-wrap">
+          <table class="scale">
+            <thead><tr><th>Role</th><th>Face · size · weight</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Page title</td><td>Archivo 24 / 600</td><td class="demo" style="font: 600 24px var(--font-display); letter-spacing: -0.015em;">Factures</td></tr>
+              <tr><td>Key figure</td><td>Archivo 27 / 600, tabular</td><td class="demo num" style="font: 600 27px var(--font-display); letter-spacing: -0.02em;">2 031 627 <small style="font: 500 14px var(--font-body); color: var(--text-3);">TND HT</small></td></tr>
+              <tr><td>Section title</td><td>Inter 15 / 600</td><td class="demo" style="font: 600 15px var(--font-body);">Antériorité des créances</td></tr>
+              <tr><td>Body and table</td><td>Inter 14 / 400</td><td class="demo" style="font: 400 14px var(--font-body);">Poutrelle IPE 200 S275, 36 m</td></tr>
+              <tr><td>Caption</td><td>Inter 12.5 / 400, Muted</td><td class="demo" style="font: 400 12.5px var(--font-body); color: var(--text-3);">expire dans 11 j</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="figures block">
+        <div class="card"><h4>Figures and amounts</h4><p class="note">Tabular figures in every column of numbers. The dinar has three decimals: always show the millimes on documents.</p>
+          <div class="num">1 160,228 TND<br>19 % · 13 % · 7 %<br>FAC-2026-0115</div></div>
+        <div class="card"><h4>French conventions</h4><p class="note">Non-breaking space before : ; ? ! and %, guillemets « », dates as DD/MM/YYYY, spaces as thousands separators.</p>
+          <div>Échéance : 15/08/2026<br>« Arrêtée la présente facture »<br>Remise : 5 %</div></div>
+      </div>
+    </section>
+
+    <section id="icons">
+      <h2>Iconography</h2>
+      <p class="lead">Line icons from the open-source Lucide set: 24-unit grid, 1.6 stroke, round caps. Shown at 16 or 20 px next to a label; an icon alone always has an accessible name.</p>
+      <div class="icons block"><!--ICONS--></div>
+    </section>
+
+    <section id="voice">
+      <h2>Voice &amp; writing</h2>
+      <p class="lead">Novafer writes like a good workshop foreman talks: direct, precise and polite. French is the working language; product names and figures stay exact in every language.</p>
+
+      <div class="grid g3 block">
+        <div class="card value"><span class="k">Say the fact</span><p>Lead with the number, the date or the reference. « 20 factures échues » before any comment about them.</p></div>
+        <div class="card value"><span class="k">Name the action</span><p>Buttons say what happens: « Émettre la facture », « Enregistrer un règlement », never « OK » or « Valider » alone.</p></div>
+        <div class="card value"><span class="k">Explain the fix</span><p>An error says what is wrong and what to do next, without apologies: « Le montant dépasse le reste à payer (4 508,486 TND). »</p></div>
+      </div>
+
+      <div class="dodont block">
+        <div class="card do"><div class="head">Write this</div><ul>
+          <li>Livraison sous 3 semaines après accord.<small>A commitment with a number.</small></li>
+          <li>Seule une facture en brouillon peut être modifiée.<small>States the rule and the way out.</small></li>
+          <li>Facture FAC-2026-0169 émise.<small>Confirmation names the document.</small></li>
+        </ul></div>
+        <div class="card dont"><div class="head">Not this</div><ul>
+          <li>Livraison ultra-rapide garantie&nbsp;!!<small>Hype, no number.</small></li>
+          <li>Oups, une erreur est survenue.<small>Vague and too cute for a legal document.</small></li>
+          <li>Opération effectuée avec succès.<small>Says nothing about what happened.</small></li>
+        </ul></div>
+      </div>
+
+      <div class="block">
+        <h3>Glossary</h3>
+        <dl class="glossary">
+          <div><dt>Devis</dt><dd>Quote. Numbered DEV-YYYY-NNNN, valid 30 days.</dd></div>
+          <div><dt>Facture</dt><dd>Invoice. Numbered FAC-YYYY-NNNN at issue only; drafts have no number.</dd></div>
+          <div><dt>Réclamation</dt><dd>Client complaint, REC-YYYY-NNNN, linked to its invoice and product.</dd></div>
+          <div><dt>Encours</dt><dd>Outstanding receivables, all taxes included.</dd></div>
+          <div><dt>Échéance</dt><dd>Payment due date.</dd></div>
+          <div><dt>FODEC</dt><dd>1 % industrial competitiveness levy, included in the VAT base.</dd></div>
+          <div><dt>Timbre fiscal</dt><dd>Fixed stamp duty on each invoice (1,000 TND).</dd></div>
+          <div><dt>Matricule fiscal</dt><dd>Tax identifier, printed for both parties on every invoice.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="applications">
+      <h2>Applications</h2>
+      <p class="lead">The system at work, from the ERP screen to the invoice that leaves the building.</p>
+
+      <div class="block">
+        <h3>ERP dashboard</h3>
+        <p class="note" style="margin-bottom: 12px;">Cobalt marks actions and the main data series. Status colours mark state. Everything else stays neutral. Figures shown are demonstration data.</p>
+        <div class="shot"><img src="<!--IMG:dashboard-->" alt="Novafer ERP dashboard showing revenue, receivables, an invoiced vs collected chart and the receivables aging bar" width="1440" height="1587"></div>
+      </div>
+
+      <div class="grid g2 block">
+        <div>
+          <h3>Facture</h3>
+          <p class="note" style="margin-bottom: 12px;">A4, logo top left, legal identifiers for both parties, Cobalt band for the amount due, amount in words, stamp box.</p>
+          <div class="shot"><img src="<!--IMG:invoice-->" alt="Printed Novafer invoice on A4" width="1440" height="1260"></div>
+        </div>
+        <div>
+          <h3>Business card · 85 × 55 mm</h3>
+          <p class="note" style="margin-bottom: 12px;">Front on Night with the reversed logo; back on white with the contact.</p>
+          <div class="bizcards">
+            <div class="bizcard front"><!--SVG:novafer-logo-reversed--><span class="tl">Forgé avec précision.</span></div>
+            <div class="bizcard back">
+              <div class="who"><strong>Leïla Ben Salem</strong><span>Directrice commerciale</span></div>
+              <div class="contact"><span>+216 71 000 470<br>l.bensalem@novafer.tn<br>Z.I. Ben Arous, Tunisie</span><!--SVG:novafer-app-icon--></div>
+            </div>
+          </div>
+          <p class="note" style="margin-top: 10px;">Names and numbers are placeholders from the demo data.</p>
+        </div>
+      </div>
+
+      <div class="grid g2 block">
+        <div>
+          <h3>Email signature</h3>
+          <div class="signature">
+            <div class="sig"><!--SVG:novafer-app-icon--><div><strong>Nour Gharbi</strong> · Comptabilité<br><span>Novafer Industries · +216 71 000 470 · www.novafer.tn</span></div></div>
+          </div>
+          <p class="note" style="margin-top: 10px;">Plain text and a 46 px icon. No quotes, banners or extra colours.</p>
+        </div>
+        <div>
+          <h3>App icon sizes</h3>
+          <div class="appicons">
+            <figure><div style="width: 64px"><!--SVG:novafer-app-icon--></div>64</figure>
+            <figure><div style="width: 32px"><!--SVG:novafer-app-icon--></div>32</figure>
+            <figure><div style="width: 24px"><!--SVG:novafer-app-icon--></div>24</figure>
+            <figure><div style="width: 16px"><!--SVG:novafer-app-icon--></div>16</figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="signs block">
+        <div class="sign"><!--SVG:novafer-logo-reversed--></div>
+        <div class="sign" style="background:#2b4acb"><div style="width: 120px"><!--SVG:novafer-mark-white--></div></div>
+      </div>
+      <p class="note" style="margin-top: 10px;">Factory sign on Night, and the monogram alone on Cobalt for vehicles, workwear and stamped packaging.</p>
+    </section>
+
+    <section id="files">
+      <h2>Files</h2>
+      <p class="lead">Everything ships in the project repository under <code>brand/logo/</code>. SVG for screens and print, PNG for office tools.</p>
+      <ul class="files block">
+        <li><code>novafer-logo.svg</code><span>Primary, horizontal</span></li>
+        <li><code>novafer-logo-reversed.svg</code><span>On dark grounds</span></li>
+        <li><code>novafer-logo-stacked.svg</code><span>Square formats</span></li>
+        <li><code>novafer-logo-compact.svg</code><span>Without descriptor</span></li>
+        <li><code>novafer-logo-mono.svg</code><span>One colour, Ink</span></li>
+        <li><code>novafer-mark.svg</code><span>Monogram, Cobalt and Ember</span></li>
+        <li><code>novafer-mark-mono.svg</code><span>Monogram, one colour</span></li>
+        <li><code>novafer-app-icon.svg</code><span>Icon and favicon</span></li>
+        <li><code>novafer-wordmark.svg</code><span>Wordmark only</span></li>
+        <li><code>png/*.png</code><span>1200 px wide (logos), 512 px (icons)</span></li>
+      </ul>
+    </section>
+  </main>
+</div>

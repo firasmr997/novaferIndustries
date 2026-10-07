@@ -1,0 +1,187 @@
+<div class="toolbar-print">
+  <span>Aperçu avant impression · format A4</span>
+  <button type="button" class="btn btn-primary" (click)="print()" [disabled]="!data.value()"><app-icon name="printer" /> Imprimer / Enregistrer en PDF</button>
+</div>
+
+@if (data.value(); as p) {
+  @let d = p.doc;
+  @let s = p.settings;
+  @if (isReminder() && invoice(); as i) {
+  <article class="sheet letter">
+    <header class="head">
+      <img src="brand/novafer-logo.svg" alt="Novafer Industries" class="logo" />
+      <div class="company">
+        <strong>{{ s.companyName }}</strong>
+        <span>{{ s.address }}</span>
+        <span>{{ s.postalCode }} {{ s.city }}, {{ s.country }}</span>
+        <span>{{ s.phone }} · {{ s.email }}</span>
+      </div>
+    </header>
+    <section class="letter-top">
+      <div class="party client">
+        <span class="party-label">Destinataire</span>
+        <strong>{{ i.client.companyName }}</strong>
+        @if (i.client.contactName) { <span>À l'attention de {{ i.client.contactName }}</span> }
+        @if (i.client.address) { <span>{{ i.client.address }}</span> }
+        @if (i.client.city) { <span>{{ i.client.city }}, Tunisie</span> }
+      </div>
+      <p class="place">{{ s.city }}, le {{ today | frDate: true }}</p>
+    </section>
+    <p class="subject"><span>Objet :</span> relance pour la facture n° {{ i.number }}, échue le {{ i.dueDate | frDate }}</p>
+    <div class="letter-body">
+      <p>Madame, Monsieur,</p>
+      <p>Sauf erreur ou omission de notre part, la facture ci-dessous reste impayée à ce jour, {{ i.daysOverdue }} jour{{ i.daysOverdue > 1 ? 's' : '' }} après son échéance :</p>
+      <table class="lines">
+        <thead><tr><th>Facture</th><th>Date</th><th>Échéance</th><th class="r">Montant TTC</th><th class="r">Déjà réglé</th><th class="r">Reste dû</th></tr></thead>
+        <tbody><tr>
+          <td class="ref">{{ i.number }}</td><td>{{ i.issueDate | frDate }}</td><td>{{ i.dueDate | frDate }}</td>
+          <td class="r">{{ i.totals.totalTtc | money }}</td><td class="r">{{ i.amountPaid | money }}</td><td class="r strong">{{ i.balanceDue | money }} TND</td>
+        </tr></tbody>
+      </table>
+      <p>Nous vous remercions de bien vouloir procéder à son règlement dans les meilleurs délais, par virement sur notre compte {{ s.bankName }} (RIB {{ s.rib }}) ou par chèque à l'ordre de {{ s.companyName }}.</p>
+      <p>Si votre règlement nous est parvenu entre-temps, nous vous prions de ne pas tenir compte de ce courrier. Notre service comptabilité reste à votre disposition au {{ s.phone }}.</p>
+      <p>Veuillez agréer, Madame, Monsieur, l'expression de nos salutations distinguées.</p>
+      <p class="signoff">Le service comptabilité<br /><strong>{{ s.companyName }}</strong></p>
+    </div>
+    <footer class="legal">
+      @if (s.demo) { <p class="demo-note">Données de démonstration : courrier fictif, sans valeur juridique.</p> }
+      <p>{{ s.companyName }} · {{ s.legalForm }} · MF {{ s.matriculeFiscal }} · RC {{ s.registreCommerce }} · {{ s.website }}</p>
+    </footer>
+  </article>
+  } @else {
+  <article class="sheet" [class.draft]="draft()">
+    @if (draft()) {
+      <div class="watermark" aria-hidden="true">{{ d.status === 'ANNULEE' ? 'ANNULÉE' : 'BROUILLON' }}</div>
+    }
+
+    <header class="head">
+      <img src="brand/novafer-logo.svg" alt="Novafer Industries" class="logo" />
+      <div class="company">
+        <strong>{{ s.companyName }}</strong>
+        @if (s.legalForm) { <span>{{ s.legalForm }}</span> }
+        <span>{{ s.address }}</span>
+        <span>{{ s.postalCode }} {{ s.city }}, {{ s.country }}</span>
+        <span>{{ s.phone }} · {{ s.email }}</span>
+      </div>
+    </header>
+
+    <section class="title-band">
+      <div>
+        <h1>{{ isInvoice() ? 'Facture' : 'Devis' }}</h1>
+        <span class="number">N° {{ d.number ?? '— (brouillon)' }}</span>
+      </div>
+      <dl class="dates">
+        <div><dt>Date</dt><dd>{{ d.issueDate | frDate }}</dd></div>
+        @if (invoice(); as i) { <div><dt>Échéance</dt><dd>{{ i.dueDate | frDate }}</dd></div> }
+        @if (quote(); as q) { <div><dt>Valable jusqu'au</dt><dd>{{ q.validUntil | frDate }}</dd></div> }
+        <div><dt>Code client</dt><dd>{{ d.client.code }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="parties">
+      <div class="party">
+        <span class="party-label">Émetteur</span>
+        <strong>{{ s.companyName }}</strong>
+        <span>Matricule fiscal : {{ s.matriculeFiscal ?? '–' }}</span>
+        <span>RC : {{ s.registreCommerce ?? '–' }}</span>
+      </div>
+      <div class="party client">
+        <span class="party-label">{{ isInvoice() ? 'Facturé à' : 'Destinataire' }}</span>
+        <strong>{{ d.client.companyName }}</strong>
+        @if (d.client.contactName) { <span>À l'attention de {{ d.client.contactName }}</span> }
+        @if (d.client.address) { <span>{{ d.client.address }}</span> }
+        @if (d.client.city) { <span>{{ d.client.city }}, Tunisie</span> }
+        <span>Matricule fiscal : {{ d.client.matriculeFiscal ?? '–' }}</span>
+      </div>
+    </section>
+
+    @if (d.subject) {
+      <p class="subject"><span>Objet :</span> {{ d.subject }}</p>
+    }
+
+    <table class="lines">
+      <thead>
+        <tr>
+          <th class="ref">Réf.</th>
+          <th>Désignation</th>
+          <th class="r">Qté</th>
+          <th class="r">PU HT</th>
+          <th class="r">Rem.</th>
+          <th class="r">TVA</th>
+          <th class="r">Total HT</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of d.lines; track l.id) {
+          <tr>
+            <td class="ref">{{ l.reference ?? '' }}</td>
+            <td>{{ l.description }}</td>
+            <td class="r">{{ l.quantity | qty }} {{ l.unit }}</td>
+            <td class="r">{{ l.unitPrice | money }}</td>
+            <td class="r">{{ l.discountPct ? l.discountPct + ' %' : '' }}</td>
+            <td class="r">{{ l.vatRate }} %</td>
+            <td class="r strong">{{ l.totalHt | money }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <section class="bottom">
+      <div class="left">
+        <table class="vat">
+          <thead><tr><th>Taux TVA</th><th class="r">Base</th><th class="r">Montant</th></tr></thead>
+          <tbody>
+            @for (v of d.totals.vatBreakdown; track v.rate) {
+              <tr><td>{{ v.rate }} %</td><td class="r">{{ v.base | money }}</td><td class="r">{{ v.amount | money }}</td></tr>
+            }
+          </tbody>
+        </table>
+        @if (d.client.vatExempt) {
+          <p class="mention">Vente en suspension de TVA et de FODEC (entreprise totalement exportatrice).</p>
+        }
+        @if (isInvoice()) {
+          <p class="words">Arrêtée la présente facture à la somme de :<br /><strong>{{ words() }}</strong></p>
+        } @else {
+          <p class="words">Arrêté le présent devis à la somme de :<br /><strong>{{ words() }}</strong></p>
+        }
+      </div>
+      <dl class="totals">
+        @if (d.totals.totalDiscount > 0) { <div><dt>Remises</dt><dd>{{ d.totals.totalDiscount | money }}</dd></div> }
+        <div><dt>Total HT</dt><dd>{{ d.totals.totalHt | money }}</dd></div>
+        @if (d.totals.totalFodec > 0) { <div><dt>FODEC {{ d.totals.fodecRate }} %</dt><dd>{{ d.totals.totalFodec | money }}</dd></div> }
+        <div><dt>Total TVA</dt><dd>{{ d.totals.totalVat | money }}</dd></div>
+        @if (d.totals.fiscalStamp > 0) { <div><dt>Timbre fiscal</dt><dd>{{ d.totals.fiscalStamp | money }}</dd></div> }
+        <div class="grand"><dt>Net à payer</dt><dd>{{ d.totals.totalTtc | money }} <small>TND</small></dd></div>
+      </dl>
+    </section>
+
+    <section class="foot-info">
+      <div>
+        @if (isInvoice()) {
+          <span class="party-label">Règlement</span>
+          <span>Échéance : {{ invoice()?.dueDate | frDate }}</span>
+          <span>Banque : {{ s.bankName ?? '–' }}</span>
+          <span>RIB : {{ s.rib ?? '–' }}</span>
+        } @else {
+          <span class="party-label">Conditions</span>
+          <span>{{ s.quoteFooter }}</span>
+        }
+        @if (d.notes) { <span class="notes">{{ d.notes }}</span> }
+      </div>
+      <div class="stamp">
+        <span class="party-label">{{ isInvoice() ? 'Cachet et signature' : 'Bon pour accord, cachet et signature du client' }}</span>
+      </div>
+    </section>
+
+    <footer class="legal">
+      @if (s.demo) { <p class="demo-note">Données de démonstration : document fictif, sans valeur légale.</p> }
+      @if (isInvoice() && s.invoiceFooter) { <p>{{ s.invoiceFooter }}</p> }
+      <p>{{ s.companyName }} · {{ s.legalForm }} · MF {{ s.matriculeFiscal }} · RC {{ s.registreCommerce }} · {{ s.website }}</p>
+    </footer>
+  </article>
+  }
+} @else if (data.error()) {
+  <p class="error">Ce document est introuvable ou vous n'avez pas accès à son impression.</p>
+} @else {
+  <p class="error">Préparation du document…</p>
+}

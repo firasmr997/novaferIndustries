@@ -1,0 +1,57 @@
+# Novafer ERP: PostgreSQL + Spring Boot API + Angular frontend (served by Nginx).
+#
+#   docker compose up -d postgres          # database only, for local development (ng serve + mvn spring-boot:run)
+#   docker compose up -d --build           # the full stack: http://localhost:8086
+#
+# Values come from .env (copy .env.example). Defaults are for development only.
+name: novafer-erp
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-novafer}
+      POSTGRES_USER: ${POSTGRES_USER:-novafer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-novafer}
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-novafer}
+      DATABASE_USERNAME: ${POSTGRES_USER:-novafer}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-novafer}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-docker-compose-secret-0123456789abcdefghij}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8086,http://localhost:4200}
+      DEMO_DATA: ${DEMO_DATA:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    ports:
+      - "${BACKEND_PORT:-8085}:8085"
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8086}:80"
+
+volumes:
+  postgres-data:

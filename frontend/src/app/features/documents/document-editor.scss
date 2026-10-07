@@ -1,0 +1,222 @@
+.error-banner {
+  margin-bottom: 16px;
+}
+
+/* Lines get the full width; notes and the totals summary share the row below them. */
+.editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.editor-main {
+  display: contents;
+}
+
+.editor .full {
+  grid-column: 1 / -1;
+}
+
+.hint.warn {
+  color: var(--warning);
+}
+
+.lines {
+  padding: 4px 0 0;
+  container-type: inline-size;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 84px 104px 116px 76px 88px 120px 100px;
+  gap: 8px;
+  align-items: start;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.line.head {
+  padding-top: 6px;
+  padding-bottom: 8px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  align-items: center;
+}
+
+.line .right {
+  text-align: right;
+}
+
+.desc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ref {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.total {
+  height: 32px;
+  line-height: 32px;
+  text-align: right;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tools {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.add {
+  padding: 14px 20px 18px;
+}
+
+.summary {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.sum {
+  margin: 0;
+  padding: 10px 20px 4px;
+}
+
+.sum > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 13.5px;
+}
+
+.sum dt {
+  color: var(--text-2);
+}
+
+.sum dt .subtle {
+  font-size: 12px;
+}
+
+.sum dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.sum .strong {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+.sum .strong dt,
+.sum .strong dd {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.sum .grand {
+  margin-top: 8px;
+  padding: 14px 0 12px;
+  border-top: 1px solid var(--border-strong);
+  align-items: baseline;
+}
+
+.sum .grand dt {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.sum .grand dd {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.note {
+  padding: 0 20px 18px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+@media (max-width: 1000px) {
+  .editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .summary {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* The line grid follows the panel's width, not the viewport's. */
+@container (max-width: 1020px) {
+  .line {
+    grid-template-columns: minmax(180px, 1fr) 70px 92px 100px 64px 80px 104px 90px;
+  }
+}
+
+.cell {
+  display: block;
+  min-width: 0;
+}
+
+.mlabel {
+  display: none;
+}
+
+@container (max-width: 880px) {
+  .line {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px 8px;
+  }
+
+  .line.head {
+    display: none;
+  }
+
+  .desc {
+    grid-column: 1 / -1;
+  }
+
+  .mlabel {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-3);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .c-qty,
+  .c-unit,
+  .c-vat {
+    grid-column: span 2;
+  }
+
+  .c-price,
+  .c-disc {
+    grid-column: span 3;
+  }
+
+  .line > .total {
+    grid-column: span 4;
+    height: auto;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .tools {
+    grid-column: span 2;
+    align-self: end;
+  }
+}
